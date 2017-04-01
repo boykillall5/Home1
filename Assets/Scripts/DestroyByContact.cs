@@ -4,39 +4,39 @@ using UnityEngine;
 
 public class DestroyByContact : MonoBehaviour {
 
-	public GameObject explosion;
-	public GameObject playerExplosion;
-	public int scoreValue;
-	private GameController gameController;
+    public GameObject explosion;
+    public GameObject playerExplosion;
+    public int scoreValue;
+    private GameController gameController;
 
-	void start()
-	{
-		GameObject gameControllerObject = GameObject.FindWithTag ("GameController");
-		if (gameControllerObject != null) {
-			
-			gameController = gameControllerObject.GetComponent <GameController> ();
-		}
-		if (gameController == null) {
-			
-			Debug.Log ("Cannot find 'GameController'Script");
-		}
-	}
-	void OnTriggerEnter(Collider other)
-	{
-		if (other.tag == "Boundary") {
-			return;
-		}
-		Instantiate (explosion, transform.position, transform.rotation);
-		if (other.tag == "Player") 
-		{
-			Instantiate (playerExplosion, other.transform.position, other.transform.rotation);
-		}
+    void Start() 
+    {
+        GameObject gameControllerObject = GameObject.FindGameObjectWithTag("GameController");
+        if (gameControllerObject != null)
+        {
+            gameController = gameControllerObject.GetComponent<GameController>();
+        }
+        if (gameController == null)
+        {
+            Debug.Log("Cannot find 'GameController' script");
+        }
+    }
 
-		Destroy (other.gameObject);
+    void OnTriggerEnter(Collider other)
+    {
+        if (other.tag == "Boundary" || other.tag == "Enemy")
+        {
+            return;
+        }
 
-		Destroy (gameObject);
-
-		gameController.AddScore (scoreValue);
-
-	}
+        Instantiate(explosion, other.transform.position, other.transform.rotation);
+        if (other.tag == "Player")
+        {
+            Instantiate(playerExplosion, other.transform.position, other.transform.rotation);
+            gameController.GameOver();
+        }
+        gameController.AddScore(scoreValue);
+        Destroy(other.gameObject);
+        Destroy(gameObject);
+    }
 }
